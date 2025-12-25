@@ -3,52 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LAMPCO Leave Application Portal</title>
-
+<title>LAMPCO Leave Portal</title>
 <style>
-body{
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg,#0d6efd,#20c997);
-  padding:12px;
-}
-.container{
-  max-width:420px;
-  margin:auto;
-  background:#fff;
-  padding:18px;
-  border-radius:14px;
-  box-shadow:0 6px 15px rgba(0,0,0,.2);
-}
+body{font-family:Arial,sans-serif;background:linear-gradient(135deg,#0d6efd,#20c997);padding:12px;}
+.container{max-width:420px;margin:auto;background:#fff;padding:18px;border-radius:14px;box-shadow:0 6px 15px rgba(0,0,0,.2);}
 h2{text-align:center;color:#0d6efd;font-size:18px;}
 .subtitle{text-align:center;font-size:13px;margin-bottom:15px;}
 label{font-weight:bold;font-size:13px;}
-input,select,textarea,button{
-  width:100%;padding:10px;margin-top:5px;margin-bottom:10px;border-radius:8px;border:1px solid #ccc;font-size:14px;
-}
+input,select,textarea,button{width:100%;padding:10px;margin-top:5px;margin-bottom:10px;border-radius:8px;border:1px solid #ccc;font-size:14px;}
 textarea{resize:none;}
 button{background:#0d6efd;color:#fff;border:none;font-size:15px;cursor:pointer;}
 button.secondary{background:#6c757d;}
 button.danger{background:#dc3545;}
-.preview-card{
-  background:#f8f9fa;
-  border-radius:10px;
-  padding:10px;
-  margin-bottom:10px;
-  font-size:13px;
-}
+.preview-card{background:#f8f9fa;border-radius:10px;padding:10px;margin-bottom:10px;font-size:13px;}
 .preview-card p{margin:4px 0;}
 .actions{display:flex;gap:6px;margin-top:8px;}
 .actions button{flex:1;font-size:13px;}
 </style>
 </head>
-
 <body>
 <div class="container">
 <h2>LAAK MULTIPURPOSE COOPERATIVE</h2>
 <div class="subtitle">Leave Application Portal</div>
 
 <form id="leaveForm">
-
 <label>Branch</label>
 <select id="branch">
   <option value="">Select Branch</option>
@@ -102,45 +80,39 @@ button.danger{background:#dc3545;}
 </div>
 
 <script>
-const scriptURL = "https://script.google.com/macros/s/AKfycbw316fp3tMQYrxHCrr6IE1ZviXrwvdx1kXLnSQozpCPgfJKgp5NcBe4eYL6xIVhrILi/exec"; // Replace with Apps Script Web App URL
-let rows = [];
-let editIndex = null;
+const scriptURL = "https://script.google.com/macros/s/AKfycby88gMczVYVrFCnxajd_cSPawBpRNeFIVXrvN66ugx8naTvtbyeibrfIyeWvG1h1aJ8/exec"; // Replace here
+let rows=[], editIndex=null;
 
-function calculateDays() {
-  const start = document.getElementById("start").value;
-  const end = document.getElementById("end").value;
-  const daysInput = document.getElementById("days");
+function calculateDays(){
+  const start=document.getElementById("start").value;
+  const end=document.getElementById("end").value;
+  const daysInput=document.getElementById("days");
   if(start && end){
-    const diff = (new Date(end) - new Date(start))/(1000*60*60*24) + 1;
-    daysInput.value = diff > 0 ? diff : 0;
-  } else { daysInput.value = ""; }
+    const diff=(new Date(end)-new Date(start))/(1000*60*60*24)+1;
+    daysInput.value=diff>0?diff:0;
+  } else {daysInput.value="";}
 }
-
-document.getElementById("start").addEventListener("change", calculateDays);
-document.getElementById("end").addEventListener("change", calculateDays);
+document.getElementById("start").addEventListener("change",calculateDays);
+document.getElementById("end").addEventListener("change",calculateDays);
 
 function addRow(){
-  const row = {
-    branch: document.getElementById("branch").value,
-    empId: document.getElementById("empId").value,
-    name: document.getElementById("empName").value,
-    leaveType: document.getElementById("leaveType").value,
-    days: document.getElementById("days").value,
-    start: document.getElementById("start").value,
-    end: document.getElementById("end").value,
-    reason: document.getElementById("reason").value
+  const row={
+    branch:document.getElementById("branch").value,
+    empId:document.getElementById("empId").value,
+    name:document.getElementById("empName").value,
+    leaveType:document.getElementById("leaveType").value,
+    days:document.getElementById("days").value,
+    start:document.getElementById("start").value,
+    end:document.getElementById("end").value,
+    reason:document.getElementById("reason").value
   };
-  if(Object.values(row).includes("")){
-    alert("Complete all fields.");
-    return;
-  }
-  if(editIndex!==null){ rows[editIndex]=row; editIndex=null; } 
-  else { rows.push(row); }
+  if(Object.values(row).includes("")){alert("Complete all fields.");return;}
+  if(editIndex!==null){rows[editIndex]=row;editIndex=null;} else {rows.push(row);}
   leaveForm.reset(); document.getElementById("days").value=""; renderPreview();
 }
 
 function renderPreview(){
-  const box = document.getElementById("previewList");
+  const box=document.getElementById("previewList");
   box.innerHTML="";
   rows.forEach((r,i)=>{
     box.innerHTML+=`
@@ -156,10 +128,9 @@ function renderPreview(){
           <button class="secondary" onclick="editRow(${i})">Edit</button>
           <button class="danger" onclick="deleteRow(${i})">Delete</button>
         </div>
-      </div>
-    `;
+      </div>`;
   });
-  document.getElementById("previewBox").style.display = rows.length ? "block" : "none";
+  document.getElementById("previewBox").style.display=rows.length?"block":"none";
 }
 
 function editRow(i){
@@ -175,19 +146,18 @@ function editRow(i){
   editIndex=i;
 }
 
-function deleteRow(i){ if(confirm("Delete this entry?")){ rows.splice(i,1); renderPreview(); } }
+function deleteRow(i){if(confirm("Delete this entry?")){rows.splice(i,1);renderPreview();}}
 
 function submitAll(){
   fetch(scriptURL,{
     method:"POST",
-    body: JSON.stringify({records: rows}),
-    headers: {"Content-Type":"application/json"}
+    body:JSON.stringify({records:rows}),
+    headers:{"Content-Type":"application/json"}
   })
   .then(res=>res.json())
-  .then(()=>{ alert("Leave requests submitted successfully!"); rows=[]; renderPreview(); })
+  .then(()=>{alert("Leave requests submitted successfully!"); rows=[]; renderPreview();})
   .catch(()=>alert("Submission failed."));
 }
 </script>
 </body>
 </html>
-
