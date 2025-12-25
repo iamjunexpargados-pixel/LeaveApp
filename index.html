@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LAMPCO Leave Application Portal</title>
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#0d6efd,#20c997);
+  padding:12px;
+}
+
+.container{
+  max-width:420px;
+  margin:auto;
+  background:#fff;
+  padding:18px;
+  border-radius:14px;
+  box-shadow:0 6px 15px rgba(0,0,0,.2);
+}
+
+h2{text-align:center;color:#0d6efd;font-size:18px;}
+.subtitle{text-align:center;font-size:13px;margin-bottom:15px;}
+
+label{
+  font-weight:bold;
+  font-size:13px;
+}
+
+input,select,textarea,button{
+  width:100%;
+  padding:10px;
+  margin-top:5px;
+  margin-bottom:10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  font-size:14px;
+}
+
+textarea{resize:none;}
+
+button{
+  background:#0d6efd;
+  color:#fff;
+  border:none;
+  font-size:15px;
+  cursor:pointer;
+}
+
+button.secondary{background:#6c757d;}
+button.danger{background:#dc3545;}
+
+.preview-card{
+  background:#f8f9fa;
+  border-radius:10px;
+  padding:10px;
+  margin-bottom:10px;
+  font-size:13px;
+}
+
+.preview-card p{
+  margin:4px 0;
+}
+
+.actions{
+  display:flex;
+  gap:6px;
+  margin-top:8px;
+}
+
+.actions button{
+  flex:1;
+  font-size:13px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>LAAK MULTIPURPOSE COOPERATIVE</h2>
+<div class="subtitle">Leave Application Portal</div>
+
+<form id="leaveForm">
+
+<label>Branch</label>
+<select id="branch">
+  <option value="">Select Branch</option>
+  <option>Aguinaldo</option>
+  <option>Head Office</option>
+  <option>Kilagding</option>
+  <option>Kidawa</option>
+  <option>Laak</option>
+  <option>Langtud</option>
+  <option>Mangloy</option>
+  <option>Pagwas</option>
+  <option>Sawata</option>
+</select>
+
+<label>Employee ID</label>
+<input id="empId">
+
+<label>Employee Name</label>
+<input id="empName">
+
+<label>Leave Type</label>
+<select id="leaveType">
+  <option value="">Select Leave</option>
+  <option>Vacation Leave</option>
+  <option>Sick Leave</option>
+  <option>Emergency Leave</option>
+  <option>Paternity Leave</option>
+  <option>Maternity Leave</option>
+</select>
+
+<label>No. of Days</label>
+<input type="number" id="days" step="0.5" min="0.5">
+
+<label>Start Date</label>
+<input type="date" id="start">
+
+<label>End Date</label>
+<input type="date" id="end">
+
+<label>Reason</label>
+<textarea id="reason" rows="2"></textarea>
+
+<button type="button" onclick="addRow()">ADD TO LIST</button>
+
+</form>
+
+<div id="previewBox" style="display:none;">
+  <h4>Pending Leave Requests</h4>
+  <div id="previewList"></div>
+  <button onclick="submitAll()">SUBMIT ALL</button>
+</div>
+
+</div>
+
+<script>
+const scriptURL = "https://script.google.com/macros/s/AKfycbymRuHTr_Jq3RNRAidZ4W_JUS_bP3DiS9yu7wqRHlWg744ouj5x1g02oHSTDV-Gksi8GQ/exec"; // your Apps Script URL
+let rows = [];
+let editIndex = null;
+
+function addRow(){
+  const row = {
+    branch: document.getElementById("branch").value,
+    empId: document.getElementById("empId").value,
+    name: document.getElementById("empName").value,
+    leaveType: document.getElementById("leaveType").value,
+    days: document.getElementById("days").value,
+    start: document.getElementById("start").value,
+    end: document.getElementById("end").value,
+    reason: document.getElementById("reason").value
+  };
+
+  if(Object.values(row).includes("")){
+    alert("Complete all fields.");
+    return;
+  }
+
+  if(editIndex !== null){
+    rows[editIndex] = row;
+    editIndex = null;
+  } else {
+    rows.push(row);
+  }
+
+  leaveForm.reset();
+  renderPreview();
+}
+
+function renderPreview(){
+  const box = document.getElementById("previewList");
+  box.innerHTML = "";
+
+  rows.forEach((r,i)=>{
+    box.innerHTML += `
+      <div class="preview-card">
+        <p><b>Branch:</b> ${r.branch}</p>
+        <p><b>ID:</b> ${r.empId}</p>
+        <p><b>Name:</b> ${r.name}</p>
+        <p><b>Leave:</b> ${r.leaveType}</p>
+        <p><b>Days:</b> ${r.days}</p>
+        <p><b>${r.start}</b> to <b>${r.end}</b></p>
+        <p><b>Reason:</b> ${r.reason}</p>
+
+        <div class="actions">
+          <button class="secondary" onclick="editRow(${i})">Edit</button>
+          <button class="danger" onclick="deleteRow(${i})">Delete</button>
+        </div>
+      </div>
+    `;
+  });
+
+  document.getElementById("previewBox").style.display =
+    rows.length ? "block" : "none";
+}
+
+function editRow(i){
+  const r = rows[i];
+  document.getElementById("branch").value = r.branch;
+  document.getElementById("empId").value = r.empId;
+  document.getElementById("empName").value = r.name;
+  document.getElementById("leaveType").value = r.leaveType;
+  document.getElementById("days").value = r.days;
+  document.getElementById("start").value = r.start;
+  document.getElementById("end").value = r.end;
+  document.getElementById("reason").value = r.reason;
+  editIndex = i;
+}
+
+function deleteRow(i){
+  if(confirm("Delete this entry?")){
+    rows.splice(i,1);
+    renderPreview();
+  }
+}
+
+function submitAll(){
+  fetch(scriptURL,{
+    method:"POST",
+    body: JSON.stringify({records: rows}),
+    headers:{"Content-Type":"application/json"}
+  })
+  .then(res=>res.json())
+  .then(()=>{
+    alert("Leave requests submitted successfully!");
+    rows=[];
+    renderPreview();
+  })
+  .catch(()=>alert("Submission failed."));
+}
+</script>
+
+</body>
+</html>
